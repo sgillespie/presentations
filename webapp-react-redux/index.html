@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+    <head>
+	<meta charset="utf-8">
+        
+	<title>Creating Webapps with React and Redux</title>
+        
+	<link rel="stylesheet" href="css/reveal.css">
+	<link rel="stylesheet" href="css/theme/black.css" id="theme">
+
+	<!-- Code syntax highlighting -->
+	<link rel="stylesheet" href="lib/css/zenburn.css">
+
+	<!-- Printing and PDF exports -->
+	<script>
+	 var link = document.createElement( 'link' );
+	 link.rel = 'stylesheet';
+	 link.type = 'text/css';
+	 link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+	 document.getElementsByTagName( 'head' )[0].appendChild( link );
+	</script>
+
+	<!--[if lt IE 9]>
+	    <script src="lib/js/html5shiv.js"></script>
+	<![endif]-->
+    </head>
+        
+    <body>
+	<div class="reveal">
+	    <div class="slides">
+		<section>
+		    <h1>React and Redux</h1>
+		    <h3>Creating Web Applications with React and Redux</h3>
+		    <p>
+			<small>Created by <a href="https://github.com/sgillespie">Sean Gillespie</a></small>
+		    </p>
+		</section>
+
+		<section>
+		    <h2>React</h2>
+                    <p>A javascript library for building user interfaces</p>
+                    <ul>
+                        <li>UI Only</li>
+                        <li>Virtual DOM</li>
+                        <li>Unidirection data flow</li>
+                    </ul>
+		</section>
+
+                <section>
+                    <h2>Virtual DOM</h2>
+                    <p>By using a virtual DOM, React only updates the parts of the page that actually changes</p>
+                    <ul>
+                        <li>DOM manipulation is very slow!</li>
+                        <li>React computes the most efficient DOM mutation</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>Markup</h2>
+                    <p>React ships with an HTML-like syntax <strong>(JSX)</strong></p>
+                    <pre><code>var HelloWorld = React.createClass({
+  render: function() {
+    return (
+      <p>
+        Hello {this.props.name}!
+      </p>
+    );
+  }
+});
+
+ReactDOM.render(
+  &lt;HelloWorld name="Sean" /&gt;,
+  document.getElementById('root')
+);</code></pre>
+                </section>
+
+                <section>
+                    <h2>Markup</h2>
+                    <p>JSX is optional</p>
+                    <pre><code>var child1 = React.createElement(
+  'li', null, 'First Text Content');
+var child2 = React.createElement(
+  'li', null, 'Second Text Content');
+var root = React.createElement(
+  'ul', { className: 'my-list' }, child1, child2);
+
+ReactDOM.render(root, document.getElementById('root'));</code></pre>
+                </section>
+
+                <section>
+                    <h2>Redux</h2>
+                    <p>A predictable state container for JavaScript apps</p>
+                    <ul>
+                        <li>The whole state is stored in a single store</li>
+                        <li>The only way to change a state is to emit an action</li>
+                        <li>Reducers specify how actions transform state</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>Reducers</h2>
+                    <p>Reducers are functions which specify how state is transformed</p>
+                    <ul>
+                        <li>Should be referentially transparent.</li>
+                        <li>That is, given the same arguments, they always return the same result.</li>
+                        <li>Take the current state and action, and return the new state</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>Concepts</h2>
+                    <ul>
+                        <li>Actions</li>
+                        <li>Reducers</li>
+                        <li>Store</li>
+                        <li>UI Bindings</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>Actions</h2>
+                    <p>Payloads of information that sends data from your application to your store</p>
+                    <pre><code>var addTodoAction = {
+  type: ADD_TODO,
+  text: 'Build my first Redux app'
+}</code></pre>
+                </section>
+
+                <section>
+                    <h2>Action Creators</h2>
+                    <p>Functions that create actions</p>
+                    <pre><code>function addTodo (text) {
+  return {
+    type: ADD_TODO,
+    text: text
+  };
+}</code></pre>
+                </section>
+
+                <section>
+                    <h2>Reducers</h2>
+                    <p>Mutate state of the store</p>
+                    <pre><code>function todoApp(state = initialState, action) {
+  switch (action.type) {
+    case ADD_TODO:
+      return Object.assign({}, state, {
+        text: action.text
+      })
+    default:
+      return state
+  }
+}</code></pre>
+                </section>
+
+                <section>
+                    <h2>Store</h2>
+                    <ul>
+                        <li>Holds Application State</li>
+                        <li>Allows access to state</li>
+                        <li>Allows state to be updated</li>
+                        <li>Registers listeners</li>
+                        <li>Handles unregistering of listeners</li>
+                    </ul>
+                    <pre><code>var store = createStore(todoApp)</code></pre>
+                </section>
+
+                <section>
+                    <h2>Usage with React</h2>
+                    <p>Pass the store to the the component by wrapping it in &lt;Provider&gt;</p>
+                    <pre><code>var store = createStore(todoApp)
+
+ReactDOM.render(
+  <Provider store={store}>
+    <App />
+  </Provider>,
+  document.getElementById('root')
+)</code></pre>
+                </section>
+
+                <section>
+                    <h2>Redux aware components</h2>
+                    <p>Separate presentational and container components</p>
+                    <ul>
+                        <li>Presentational components do not access application state</li>
+                        <li>Container components are aware of Redux</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>Redux aware components</h2>
+                    <p>Make components redux aware by wrapping calling connect() on them</p>
+                    <pre><code>function mapStateToProps (state) {
+  return {
+    todos: state.todos
+  };
+}
+connect(stateToProps)(TodoList);</code></pre>
+                </section>
+
+                <section>
+                    <h2>Toolset</h2>
+                    <p>Tools that complement React and Redux</p>
+                    <ul>
+                        <li>React</li>
+                        <li>Redux</li>
+                        <li>UI: React Bootstrap</li>
+                        <li>Testing: Mocha and Chai</li>
+                        <li>React Test Utils: Shallow Rendering</li>
+                        <li>Packaging: Webpack</li>
+                        <li>ES6: Babel</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>Resources</h2>
+                    <p><a href="http://reactjs.com">reactjs.com</a></p>
+                    <p><a href="http://redux.js.org">redux.js.org</a></p>
+                </section>
+
+
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// Full list of configuration options available at:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				// Optional reveal.js plugins
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
